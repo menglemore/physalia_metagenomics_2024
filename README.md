@@ -43,6 +43,7 @@ s="seq"
 ```
 
 #### Run trimmomatic
+####like cutadapt, trimmomatic removes adapters etc introduced in NGS sequencing
 ```
 source ${path}/activate trimmomatic
 
@@ -62,10 +63,12 @@ conda deactivate
 source ${path}/activate bowtie2
 
 ##VERSION 4 HOURS LONG:
+##this command only has to be done once and it is to build the database using bowtie, which you save as an index file to continue using
 ## mkdir -p ../human_genome/
 ##bowtie2-build ${human_gen_path}GCF_009914755.1_T2T-CHM13v2.0.fna ../human_genome/GCF_009914755.1_T2T-CHM13v2.0 ### DON'T RUN IT! IT TAKES A FEW HOURS TO BE EXECUTED
 
 ##VERSION 10 SECONDS LONG
+##this is the actual command to run the samples to be mapped
 bowtie2 -x ${human_gen_path}GCF_009914755.1_T2T-CHM13v2.0 -1 ${s}_filtered_1.fastq -2 ${s}_filtered_2.fastq \
     -S ${s}.sam --very-sensitive-local -p 8
 
@@ -123,12 +126,13 @@ metaphlan -h
 ```
 
 #### Let's now run MetaPhlAn
+####most important file is the PROFILE file
 ```
 metaphlan ${s}.fasta.gz --input_type fasta --bowtie2out ${s}.bowtie2.bz2 --samout ${s}.sam.bz2 -o ${s}_profile.txt \
     --stat_q 0.1 --nproc 8 --bowtie2db ${mpa_db} --index ${db_version}
 
 s="SRS014494-Posterior_fornix"; metaphlan ${s}.fasta.gz --input_type fasta --bowtie2out ${s}.bowtie2.bz2 --samout ${s}.sam.bz2 -o ${s}_profile.txt \
-    --stat_q 0.1 --nproc 8 --bowtie2db ${mpa_db} --index ${db_version}
+    --stat_q 0.1 --nproc 8 --bowtie2db ${mpa_db} --index ${db_version} --force #can add this if it says a file already exists
 s="SRS014459-Stool"; metaphlan ${s}.fasta.gz --input_type fasta --bowtie2out ${s}.bowtie2.bz2 --samout ${s}.sam.bz2 -o ${s}_profile.txt \
     --stat_q 0.1 --nproc 8 --bowtie2db ${mpa_db} --index ${db_version}
 s="SRS014464-Anterior_nares"; metaphlan ${s}.fasta.gz --input_type fasta --bowtie2out ${s}.bowtie2.bz2 --samout ${s}.sam.bz2 -o ${s}_profile.txt \
@@ -151,6 +155,8 @@ metaphlan ${s}.fastq.bz2 --input_type fastq --bowtie2out ${s}.bowtie2.bz2 --samo
     --nproc 8 --bowtie2db ${mpa_db} --index ${db_version}
 metaphlan ${s}.fastq.bz2 --input_type fastq --bowtie2out ${s}_unclas.bowtie2.bz2 --samout ${s}_unclas.sam.bz2 -o ${s}_unclas_profile.txt \
     --stat_q 0.1 --nproc 8 --unclassified_estimation --bowtie2db ${mpa_db} --index ${db_version}
+
+###this command SUBSAMPLES a determined number of reads (like early rarefaction)
 metaphlan ${s}.fastq.bz2 --input_type fastq --bowtie2out ${s}_sub.bowtie2.bz2 --samout ${s}_sub.sam.bz2 -o ${s}_sub_profile.txt \
     --stat_q 0.1 --nproc 8 --subsampling 1000 --bowtie2db ${mpa_db} --index ${db_version}
 ```
