@@ -47,10 +47,12 @@ s="seq"
 ```
 source ${path}/activate trimmomatic
 
+###pe = paired ends; phred = quality score for Illumina reads; ILLUMINACLIP = specific adapters you used to remove their sequences, corresponding to Illumina adaptors
+
 trimmomatic PE -threads 8 -phred33 -trimlog ${s}_trimmomatic.log ${s}1.fastq ${s}2.fastq \
 ${s}_filtered_1.fastq ${s}_unpaired_1.fastq ${s}_filtered_2.fastq ${s}_unpaired_2.fastq \
 ILLUMINACLIP:${path}/../envs/trimmomatic/share/trimmomatic/adapters/TruSeq3-PE-2.fa:2:30:10 \
-LEADING:20 TRAILING:20 SLIDINGWINDOW:4:15 MINLEN:75
+LEADING:20 TRAILING:20 SLIDINGWINDOW:4:15 MINLEN:75 ###these are standard numbers but can be changed 
 
 for i in *.fastq; do echo -ne "${i}\t"; cat "$i" | wc -l; done
 ```
@@ -222,6 +224,9 @@ wget https://raw.githubusercontent.com/biobakery/graphlan/refs/heads/master/exam
 wget https://raw.githubusercontent.com/biobakery/graphlan/refs/heads/master/examples/guide/annot_2.txt
 wget https://raw.githubusercontent.com/biobakery/graphlan/refs/heads/master/examples/guide/annot_3.txt
 
+graphlan.py -h
+
+###guide 
 graphlan.py guide.txt step_0.png --dpi 300 --size 3.5
 graphlan.py guide.txt step_0.svg --dpi 300 --size 3.5
 
@@ -240,6 +245,8 @@ graphlan.py guide_3.xml step_3.svg --dpi 300 --size 3.5
 graphlan_annotate.py --annot annot_3.txt guide_3.xml guide_4.xml
 graphlan.py guide_4.xml step_4.png --dpi 300 --size 3.5 --pad 0.0
 graphlan.py guide_4.xml step_4.svg --dpi 300 --size 3.5 --pad 0.0
+
+mimeopen *png
 ```
 
 #### Getting another example (PhyloPhlAn) from https://github.com/biobakery/graphlan/tree/master/examples/PhyloPhlAn
@@ -315,11 +322,21 @@ cp /home/ubuntu/course_backup/course/4_strainphlan/SRS022137.sam.bz2 .
 cp /home/ubuntu/course_backup/course/4_strainphlan/SRS055982.sam.bz2 .
 cp /home/ubuntu/course_backup/course/4_strainphlan/SRS064276.sam.bz2 .
 
+###picks up the SAM file and converts it to JSON file as a 'dictionary'; a JSON file contains the summary statistics on the mapped sequence to the marker gene; we also know breadth of coverage and SBG identity
 mpa_database="/home/ubuntu/shotgun_course/metaphlan_databases/mpa_vJun23_CHOCOPhlAnSGB_202403.pkl"
+
+sample2markers.py -h
 sample2markers.py -i *.sam.bz2 -o ./ -n 8 -d ${mpa_database}
 
 mkdir -p db_markers
+
+##this step extracts the markers we WANT for downstream analysis like MSA, phylogenetic tree etc for a SPECIFIC SPECIES; but if your goal is to run compare strain level variation across all species, then you should run this extract_markers step BEFORE###
+
 extract_markers.py -c t__SGB1877 -o db_markers/ -d ${mpa_database}
+
+## DO THIS INSTEAD:
+
+cp /home/ubuntu/course_backup/course/4_strainphlan/db_markers/t__SGB1877.fna db_markers/
 ```
 
 #### Getting a reference genome ("GCF000273725")
