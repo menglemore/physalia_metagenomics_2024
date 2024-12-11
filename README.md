@@ -142,7 +142,11 @@ s="SRS014470-Tongue_dorsum"; metaphlan ${s}.fasta.gz --input_type fasta --bowtie
 s="SRS014472-Buccal_mucosa"; metaphlan ${s}.fasta.gz --input_type fasta --bowtie2out ${s}.bowtie2.bz2 --samout ${s}.sam.bz2 -o ${s}_profile.txt \
     --stat_q 0.1 --nproc 8 --bowtie2db ${mpa_db} --index ${db_version}
 
+###this merge.py comes with metaphlan installation in conda
 merge_metaphlan_tables.py *_profile.txt > merged_abundance_table.txt
+
+more merged_abundance_table.txt
+less -S merged_abundance_table.txt
 ```
 
 #### Getting another example file (the fastq file SRS013951.fastq.bz2) from here: http://cmprod1.cibio.unitn.it/biobakery4/github_strainphlan4/fastq/
@@ -153,6 +157,8 @@ s="SRS013951";
 
 metaphlan ${s}.fastq.bz2 --input_type fastq --bowtie2out ${s}.bowtie2.bz2 --samout ${s}.sam.bz2 -o ${s}_profile.txt --stat_q 0.1 \
     --nproc 8 --bowtie2db ${mpa_db} --index ${db_version}
+
+###this command outputs your unclassified reads that were not mapped against anything
 metaphlan ${s}.fastq.bz2 --input_type fastq --bowtie2out ${s}_unclas.bowtie2.bz2 --samout ${s}_unclas.sam.bz2 -o ${s}_unclas_profile.txt \
     --stat_q 0.1 --nproc 8 --unclassified_estimation --bowtie2db ${mpa_db} --index ${db_version}
 
@@ -167,7 +173,11 @@ metaphlan ${s}.fastq.bz2 --input_type fastq --bowtie2out ${s}_sub.bowtie2.bz2 --
 conda deactivate
 
 source ${path}/activate hclust2
+
+###this command saves a different table ("merged_abundance_table_species.txt") which just contains 1 line of header of the clade name and the sample name
 grep -E "s__|SRS" merged_abundance_table.txt | grep -v "t__" | sed "s/^.*|//g" | sed "s/SRS[0-9]*-//g" > merged_abundance_table_species.txt
+
+hclust2.py -h
 
 hclust2.py \
 -i merged_abundance_table_species.txt \
@@ -181,6 +191,9 @@ hclust2.py \
 --minv 0.1 \
 --dpi 300
 ```
+
+###you should get a *png output of a heatmap; can open using FileZilla on your own desktop or run the following
+mimeopen -d *png
 
 ### End of Lecture 2 - MetaPhlAn profiling
 ### Lecture 3 - What is GraPhlAn ?
