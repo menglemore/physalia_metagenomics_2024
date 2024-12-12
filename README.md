@@ -323,12 +323,17 @@ cp /home/ubuntu/course_backup/course/4_strainphlan/SRS055982.sam.bz2 .
 cp /home/ubuntu/course_backup/course/4_strainphlan/SRS064276.sam.bz2 .
 
 ###picks up the SAM file and converts it to JSON file as a 'dictionary'; a JSON file contains the summary statistics on the mapped sequence to the marker gene; we also know breadth of coverage and SBG identity
+
 mpa_database="/home/ubuntu/shotgun_course/metaphlan_databases/mpa_vJun23_CHOCOPhlAnSGB_202403.pkl"
 
 sample2markers.py -h
 sample2markers.py -i *.sam.bz2 -o ./ -n 8 -d ${mpa_database}
 
+###these sam.bz files contain an index and statistics on the read/sequence mapped to the MARKER GENE of an SGB (sequenced genome bin)
+###breadth = length of coverage and should be above 80-85
+
 mkdir -p db_markers
+ls
 
 ##this step extracts the markers we WANT for downstream analysis like MSA, phylogenetic tree etc for a SPECIFIC SPECIES; but if your goal is to run compare strain level variation across all species, then you should run this extract_markers step BEFORE###
 
@@ -349,7 +354,7 @@ wget -P reference_genomes/ http://cmprod1.cibio.unitn.it/biobakery4/github_strai
 ```
 strainphlan -h
 ```
-
+###strainphlan 
 #### Build the multiple sequence alignment and the phylogenetic tree:
 ```
 mkdir -p output
