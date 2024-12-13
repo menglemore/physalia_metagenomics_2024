@@ -577,6 +577,12 @@ mkdir -p ${s}.megahit_asm/
 
 cp /home/ubuntu/course_backup/course/7_assembly/${s}.megahit_asm/final.contigs.fa  ${s}.megahit_asm/
 cp /home/ubuntu/course_backup/course/7_assembly/${s}.megahit_asm/contigs.fasta  ${s}.megahit_asm/
+
+## WE ALSO NEED TWO CUSTOM SCRIPT:
+##these scripts cut out the contigs that are too short, specified by length
+cp /home/ubuntu/course_backup/course/7_assembly/filter_contigs.py .
+cp /home/ubuntu/course_backup/course/7_assembly/megahit2spades.py .
+
 ```
 
 #### Do some post-processing on the contigs file
@@ -587,6 +593,7 @@ cp /home/ubuntu/course_backup/course/7_assembly/${s}.megahit_asm/contigs.fasta  
 python megahit2spades.py ${s}.megahit_asm/final.contigs.fa ${s}.megahit_asm/contigs.fasta
 python filter_contigs.py ${s}.megahit_asm/contigs.fasta ${s}.megahit_asm/contigs_filtered.fasta
 python filter_contigs.py ${s}.megahit_asm/contigs.fasta ${s}.megahit_asm/contigs_filtered_50000.fasta -l 50000
+
 ```
 
 #### PROKKA: parameters
@@ -602,6 +609,13 @@ conda deactivate
 source ${path}/activate prokka
 
 prokka --outdir ${s}_prokka --centre CDC --compliant --cpus 8 ${s}.megahit_asm/contigs_filtered.fasta
+
+## DO THIS INSTEAD:
+
+cp -r /home/ubuntu/course_backup/course/7_assembly/SRR341725_prokka/ ./
+
+###files: .faa = protein coding sequence including function description
+###
 ```
 
 ### End of Lecture 7 - Metagenomic assembly
@@ -639,8 +653,12 @@ cp ../7_assembly/SRR341725_2.fastq.gz ./
 bowtie2-build contigs_filtered.fasta contigs_filtered
 bowtie2 -x contigs_filtered -1 ${s}_1.fastq.gz -2 ${s}_2.fastq.gz -S ${s}.sam -p 8 2> ${s}.bowtie2.log
 
+###these 2 steps are large and we ran out of disc space so we will cp the results instead
 samtools view -bS ${s}.sam > ${s}.bam
 samtools sort ${s}.bam -o sorted_${s}.bam
+
+cp /home/ubuntu/course_backup/course/8_MAG-reconstruction/sorted_SRR341725.bam .  ###do this instead
+
 ```
 
 ## Run metabat2 to reconstruct metagenome-assembled genomes (MAGs)
